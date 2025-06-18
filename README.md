@@ -79,8 +79,8 @@ torchrun --standalone --nproc_per_node=1 scripts/inference.py --config configs/i
 
 - Control prompts guidance and audio guidance respectively, and use `audio_scale=3` to control audio guidance separately. At this time, `guidance_scale` only controls prompts.
 
-- To speed up, the recommanded `num_steps` range is [20-50], more steps bring higher quality. To use [TeaCache](https://github.com/ali-vilab/TeaCache), you can set `tea_cache_l1_thresh=0.14` , and the recommanded range is [0.05-0.15]. 
-- To reduce GPU memory storage, you can set `use_fsdp=True` and `num_persistent_param_in_dit`. To use multi-gpu inference, just set `sp_size=$GPU_NUM`. An example command is as follows:
+- To speed up, the recommanded `num_steps` range is [20-50], more steps bring higher quality. To use multi-gpu inference, just set `sp_size=$GPU_NUM`. To use [TeaCache](https://github.com/ali-vilab/TeaCache), you can set `tea_cache_l1_thresh=0.14` , and the recommanded range is [0.05-0.15]. 
+- To reduce GPU memory storage, you can set `use_fsdp=True` and `num_persistent_param_in_dit`. An example command is as follows:
 ```bash
 torchrun --standalone --nproc_per_node=8 scripts/inference.py --config configs/inference.yaml --input_file examples/infer_samples.txt --hp=sp_size=8,max_tokens=30000,guidance_scale=4.5,overlap_frame=13,num_steps=25,use_fsdp=True,tea_cache_l1_thresh=0.14,num_persistent_param_in_dit=7000000000
 ```
