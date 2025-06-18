@@ -59,7 +59,7 @@ OmniAvatar
 ├── pretrained_models
 │   ├── Wan2.1-T2V-14B
 │   │   ├── ...
-│   ├── OmniAvatar
+│   ├── OmniAvatar-14B
 │   │   ├── config.json
 │   │   └── pytorch_model.pt
 │   └── wav2vec2-base-960h
