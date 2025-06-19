@@ -2,7 +2,7 @@
 <h1>OmniAvatar: Efficient Audio-Driven Avatar Video Generation with Adaptive Body Animation</h1>
 
 
-[Qijun Gan](https://agnjason.github.io/) · [Ruizi Yang](https://github.com/ZiziAmy/) ·[Jianke Zhu](https://person.zju.edu.cn/en/jkzhu) · [Shaofei Xue]() · [Steven Hoi](https://scholar.google.com/citations?user=JoLjflYAAAAJ)
+[Qijun Gan](https://agnjason.github.io/) · [Ruizi Yang](https://github.com/ZiziAmy/) · [Jianke Zhu](https://person.zju.edu.cn/en/jkzhu) · [Shaofei Xue]() · [Steven Hoi](https://scholar.google.com/citations?user=JoLjflYAAAAJ)
 
 Zhejiang University, Alibaba Group
 
@@ -100,7 +100,7 @@ We train train 14B under `30000` tokens for `480p` videos. We found that using m
 
 ## 🧩 Community Works
 We ❤️ contributions from the open-source community! If your work has improved OmniAvatar, please inform us.
-Or you can directly e-mail [ganqijun@zju.edu.cn](mailto://ganqijun@zju.edu.cn). We are happy to reference your project for everyone's convenience. **🥸Have Fun!**
+Or you can directly e-mail [ganqijun@zju.edu.cn](mailto:ganqijun@zju.edu.cn). We are happy to reference your project for everyone's convenience. **🥸Have Fun!**
 
 ## 🔗Citation
 If you find this repository useful, please consider giving a star ⭐ and citation
