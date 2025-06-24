@@ -40,7 +40,7 @@ pip install flash_attn
 ### 🧱Model Download
 | Models        |                       Download Link                                           |    Notes                      |
 | --------------|-------------------------------------------------------------------------------|-------------------------------|
-| Wan2.1-I2V-14B  |      🤗 [Huggingface](https://huggingface.co/Wan-AI/Wan2.1-T2V-14B)     | Base model for 14B
+| Wan2.1-T2V-14B  |      🤗 [Huggingface](https://huggingface.co/Wan-AI/Wan2.1-T2V-14B)     | Base model for 14B
 | OmniAvatar model 14B   |      🤗 [Huggingface](https://huggingface.co/OmniAvatar/OmniAvatar-14B)         | Our LoRA and audio condition weights
 | Wav2Vec |      🤗 [Huggingface](https://huggingface.co/facebook/wav2vec2-base-960h)      | Audio encoder
 
