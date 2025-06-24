@@ -8,7 +8,7 @@ Zhejiang University, Alibaba Group
 
 <div align="center">
   <a href="https://omni-avatar.github.io/"><img src="https://img.shields.io/badge/Project-OmniAvatar-blue.svg"></a> &ensp;
-  <a href=""><img src="https://img.shields.io/badge/Arxiv-xxxx.xxxxx-b31b1b.svg?logo=arXiv"></a> &ensp;
+  <a href="http://arxiv.org/abs/2506.18866"><img src="https://img.shields.io/badge/Arxiv-2506.18866-b31b1b.svg?logo=arXiv"></a> &ensp;
   <a href="https://huggingface.co/OmniAvatar/OmniAvatar-14B"><img src="https://img.shields.io/badge/🤗-OmniAvatar-red.svg"></a>
 </div>
 </div>
@@ -16,7 +16,7 @@ Zhejiang University, Alibaba Group
 ![image](assets/material/teaser.png)
 
 ## 🔥 Latest News!!
-* June x-th, 2025: We released the inference code and model weights!
+* June 24-th, 2025: We released the inference code and model weights!
 
 
 ## Quickstart
