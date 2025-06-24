@@ -105,7 +105,15 @@ Or you can directly e-mail [ganqijun@zju.edu.cn](mailto:ganqijun@zju.edu.cn). We
 ## 🔗Citation
 If you find this repository useful, please consider giving a star ⭐ and citation
 ```
-
+@misc{gan2025omniavatar,
+      title={OmniAvatar: Efficient Audio-Driven Avatar Video Generation with Adaptive Body Animation}, 
+      author={Qijun Gan and Ruizi Yang and Jianke Zhu and Shaofei Xue and Steven Hoi},
+      year={2025},
+      eprint={2506.18866},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2506.18866}, 
+}
 ```
 
 ## Acknowledgments
