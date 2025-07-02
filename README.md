@@ -16,6 +16,7 @@ Zhejiang University, Alibaba Group
 ![image](assets/material/teaser.png)
 
 ## 🔥 Latest News!!
+* July 2-nd, 2025: We released the model weights for Wan 1.3B!
 * June 24-th, 2025: We released the inference code and model weights!
 
 
@@ -38,11 +39,13 @@ pip install flash_attn
 ```
 
 ### 🧱Model Download
-| Models        |                       Download Link                                           |    Notes                      |
-| --------------|-------------------------------------------------------------------------------|-------------------------------|
-| Wan2.1-T2V-14B  |      🤗 [Huggingface](https://huggingface.co/Wan-AI/Wan2.1-T2V-14B)     | Base model for 14B
-| OmniAvatar model 14B   |      🤗 [Huggingface](https://huggingface.co/OmniAvatar/OmniAvatar-14B)         | Our LoRA and audio condition weights
-| Wav2Vec |      🤗 [Huggingface](https://huggingface.co/facebook/wav2vec2-base-960h)      | Audio encoder
+| Models                |                       Download Link                                           |    Notes                      |
+|-----------------------|-------------------------------------------------------------------------------|-------------------------------|
+| Wan2.1-T2V-14B        |      🤗 [Huggingface](https://huggingface.co/Wan-AI/Wan2.1-T2V-14B)     | Base model for 14B
+| OmniAvatar model 14B  |      🤗 [Huggingface](https://huggingface.co/OmniAvatar/OmniAvatar-14B)         | Our LoRA and audio condition weights
+| Wan2.1-T2V-1.3B       |      🤗 [Huggingface](https://huggingface.co/Wan-AI/Wan2.1-T2V-1.3B)     | Base model for 1.3B
+| OmniAvatar model 1.3B |      🤗 [Huggingface](https://huggingface.co/OmniAvatar/OmniAvatar-1.3B)         | Our LoRA and audio condition weights
+| Wav2Vec               |      🤗 [Huggingface](https://huggingface.co/facebook/wav2vec2-base-960h)      | Audio encoder
 
 Download models using huggingface-cli:
 ``` sh
@@ -71,7 +74,11 @@ OmniAvatar
 
 ``` sh
 # 480p only for now
+# 14B
 torchrun --standalone --nproc_per_node=1 scripts/inference.py --config configs/inference.yaml --input_file examples/infer_samples.txt
+
+# 1.3B
+torchrun --standalone --nproc_per_node=1 scripts/inference.py --config configs/inference_1.3B.yaml --input_file examples/infer_samples.txt
 ```
 
 #### 💡Tips
