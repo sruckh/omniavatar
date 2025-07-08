@@ -2,6 +2,16 @@
 
 # OmniAvatar Docker Build and Push Script
 # This script builds the Docker image and pushes it to DockerHub
+#
+# Usage:
+#   ./build_and_push.sh                    # Build and push with default settings
+#   DOCKER_USERNAME=myuser ./build_and_push.sh  # Use custom username
+#   VERSION=v1.0 ./build_and_push.sh       # Use custom version tag
+#
+# Prerequisites:
+#   - Docker installed and running
+#   - DockerHub account
+#   - Logged in to DockerHub (docker login)
 
 set -e
 
@@ -11,8 +21,19 @@ IMAGE_NAME="omniavatar"
 VERSION=${VERSION:-"latest"}
 FULL_IMAGE_NAME="${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}"
 
-echo "Building OmniAvatar Docker image..."
-echo "Image: ${FULL_IMAGE_NAME}"
+echo "🐳 Building OmniAvatar Docker image..."
+echo "📦 Image: ${FULL_IMAGE_NAME}"
+echo "👤 Username: ${DOCKER_USERNAME}"
+echo "🏷️  Version: ${VERSION}"
+echo ""
+
+# Validate username
+if [ "${DOCKER_USERNAME}" = "your_username" ]; then
+    echo "⚠️  Warning: Using default username 'your_username'"
+    echo "   Set DOCKER_USERNAME environment variable to your DockerHub username"
+    echo "   Example: DOCKER_USERNAME=myuser ./build_and_push.sh"
+    echo ""
+fi
 
 # Build the Docker image
 echo "Building Docker image..."
@@ -35,10 +56,21 @@ if [ "${VERSION}" != "latest" ]; then
     docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:latest
 fi
 
-echo "Build and push completed successfully!"
-echo "Image available at: ${FULL_IMAGE_NAME}"
+echo "✅ Build and push completed successfully!"
+echo "🚀 Image available at: ${FULL_IMAGE_NAME}"
 echo ""
-echo "To use this image:"
-echo "1. Download models using: ./download_models.sh"
-echo "2. Run with: docker-compose up"
-echo "3. Or run directly: docker run --gpus all -p 7860:7860 -v \$(pwd)/pretrained_models:/app/pretrained_models:ro -v \$(pwd)/outputs:/app/outputs:rw ${FULL_IMAGE_NAME}"
+echo "📋 To use this image:"
+echo "1. Download models: ./download_models.sh"
+echo "2. Run with Docker Compose: docker-compose up"
+echo "3. Or run directly:"
+echo "   docker run --gpus all -p 7860:7860 \\"
+echo "     -v \$(pwd)/pretrained_models:/app/pretrained_models:ro \\"
+echo "     -v \$(pwd)/outputs:/app/outputs:rw \\"
+echo "     ${FULL_IMAGE_NAME}"
+echo ""
+echo "4. With Gradio share (public link):"
+echo "   docker run --gpus all -p 7860:7860 \\"
+echo "     -v \$(pwd)/pretrained_models:/app/pretrained_models:ro \\"
+echo "     -v \$(pwd)/outputs:/app/outputs:rw \\"
+echo "     -e GRADIO_SHARE=true \\"
+echo "     ${FULL_IMAGE_NAME}"

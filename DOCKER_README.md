@@ -46,8 +46,11 @@ OmniAvatar/
 ### 3. Run with Docker Compose
 
 ```bash
-# Start the container
+# Start the container (local access only)
 docker-compose up -d
+
+# Start with public Gradio link
+GRADIO_SHARE=true docker-compose up -d
 
 # View logs
 docker-compose logs -f
@@ -65,12 +68,31 @@ Open your browser and navigate to:
 ## Alternative: Run with Docker Command
 
 ```bash
+# Local access only
 docker run --gpus all \
   -p 7860:7860 \
   -v $(pwd)/pretrained_models:/app/pretrained_models:ro \
   -v $(pwd)/outputs:/app/outputs:rw \
   -e HF_TOKEN=your_token_here \
   omniavatar:latest
+
+# With public Gradio link
+docker run --gpus all \
+  -p 7860:7860 \
+  -v $(pwd)/pretrained_models:/app/pretrained_models:ro \
+  -v $(pwd)/outputs:/app/outputs:rw \
+  -e HF_TOKEN=your_token_here \
+  -e GRADIO_SHARE=true \
+  omniavatar:latest
+
+# Using bash wrapper with --share flag
+docker run --gpus all \
+  -p 7860:7860 \
+  -v $(pwd)/pretrained_models:/app/pretrained_models:ro \
+  -v $(pwd)/outputs:/app/outputs:rw \
+  -e HF_TOKEN=your_token_here \
+  omniavatar:latest \
+  bash -c "python gradio_interface.py --share"
 ```
 
 ## Building the Image
@@ -98,6 +120,7 @@ export DOCKER_USERNAME=your_username
 - `HF_TOKEN`: Your Hugging Face token (required)
 - `CUDA_VISIBLE_DEVICES`: GPU device selection (default: 0)
 - `PYTORCH_CUDA_ALLOC_CONF`: PyTorch CUDA memory configuration
+- `GRADIO_SHARE`: Create public Gradio link (default: false)
 
 ### Volume Mounts
 

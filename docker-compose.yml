@@ -17,6 +17,7 @@ services:
       - HF_TOKEN=${HF_TOKEN}
       - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
       - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
+      - GRADIO_SHARE=${GRADIO_SHARE:-false}
     runtime: nvidia
     deploy:
       resources:

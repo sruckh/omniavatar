@@ -176,5 +176,19 @@ def create_interface():
     return demo
 
 if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="OmniAvatar Gradio Interface")
+    parser.add_argument("--share", action="store_true", help="Create a public Gradio link")
+    parser.add_argument("--port", type=int, default=7860, help="Port to run the interface on")
+    args = parser.parse_args()
+    
+    # Also check environment variable for share option
+    share = args.share or os.getenv("GRADIO_SHARE", "false").lower() == "true"
+    
     demo = create_interface()
-    demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
+    demo.launch(
+        server_name="0.0.0.0", 
+        server_port=args.port, 
+        share=share
+    )

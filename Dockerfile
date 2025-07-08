@@ -52,3 +52,7 @@ EXPOSE 7860
 
 # Default command
 CMD ["python", "gradio_interface.py"]
+
+# Alternative commands:
+# CMD ["python", "gradio_interface.py", "--share"]  # For public Gradio link
+# CMD ["bash", "-c", "python gradio_interface.py --share"]  # With bash wrapper
