@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  omniavatar:
+    build: .
+    container_name: omniavatar
+    ports:
+      - "7860:7860"
+    volumes:
+      # Mount the pretrained_models directory from host
+      - ./pretrained_models:/app/pretrained_models:ro
+      # Mount outputs directory for generated videos
+      - ./outputs:/app/outputs:rw
+      # Optional: Mount examples directory
+      - ./examples:/app/examples:ro
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
+      - PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    shm_size: '2gb'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
