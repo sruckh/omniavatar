@@ -26,8 +26,9 @@ COPY requirements.txt .
 # Install PyTorch with CUDA 12.8 support
 RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 
-# Install flash-attention wheel for Python 3.12
-RUN pip install --no-cache-dir https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.0.post2/flash_attn-2.8.0.post2+cu118torch2.5cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
+# Copy and install local flash-attention wheel for Python 3.12
+COPY flash_attn-2.8.0.post2+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl /tmp/
+RUN pip install --no-cache-dir /tmp/flash_attn-2.8.0.post2+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 
 # Install other requirements
 RUN pip install --no-cache-dir -r requirements.txt

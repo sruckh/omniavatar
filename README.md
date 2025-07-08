@@ -35,6 +35,7 @@ Install dependencies:
 pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 # Optional to install flash_attn to accelerate attention computation
+# For Docker builds, place the local wheel file in project root: flash_attn-2.8.0.post2+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl
 pip install flash_attn
 ```
 
