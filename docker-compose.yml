@@ -7,12 +7,12 @@ services:
     ports:
       - "7860:7860"
     volumes:
-      # Mount the pretrained_models directory from host
-      - ./pretrained_models:/app/pretrained_models:ro
       # Mount outputs directory for generated videos
       - ./outputs:/app/outputs:rw
       # Optional: Mount examples directory
       - ./examples:/app/examples:ro
+      # Optional: Mount pretrained_models for persistence (models auto-download if not present)
+      - ./pretrained_models:/app/pretrained_models:rw
     environment:
       - HF_TOKEN=${HF_TOKEN}
       - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}

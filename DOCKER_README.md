@@ -1,6 +1,6 @@
 # OmniAvatar Docker Setup
 
-This Docker setup provides a complete containerized environment for running OmniAvatar with a Gradio web interface.
+This Docker setup provides a complete containerized environment for running OmniAvatar with a Gradio web interface. **Models are automatically downloaded on first startup!**
 
 ## Prerequisites
 
@@ -20,46 +20,25 @@ cp .env.template .env
 # HF_TOKEN=your_actual_token_here
 ```
 
-### 2. Download Models
-
-Run the model download script on your host system:
+### 2. Run with Docker Compose (Models Auto-Download!)
 
 ```bash
-# Make sure HF_TOKEN is set
-export HF_TOKEN=your_token_here
-
-# Download all required models
-./download_models.sh
-```
-
-This will create the following structure:
-```
-OmniAvatar/
-├── pretrained_models/
-│   ├── Wan2.1-T2V-14B/
-│   ├── OmniAvatar-14B/
-│   ├── Wan2.1-T2V-1.3B/
-│   ├── OmniAvatar-1.3B/
-│   └── wav2vec2-base-960h/
-```
-
-### 3. Run with Docker Compose
-
-```bash
-# Start the container (local access only)
+# Start the container (models will auto-download on first run)
 docker-compose up -d
 
 # Start with public Gradio link
 GRADIO_SHARE=true docker-compose up -d
 
-# View logs
+# View logs (including model download progress)
 docker-compose logs -f
 
 # Stop the container
 docker-compose down
 ```
 
-### 4. Access the Web Interface
+**Note:** On first startup, the container will automatically download all required models (~50GB). This may take 10-30 minutes depending on your internet connection. Models are cached locally for subsequent runs.
+
+### 3. Access the Web Interface
 
 Open your browser and navigate to:
 - Local: `http://localhost:7860`
@@ -68,10 +47,17 @@ Open your browser and navigate to:
 ## Alternative: Run with Docker Command
 
 ```bash
-# Local access only
+# Local access only (models auto-download)
 docker run --gpus all \
   -p 7860:7860 \
-  -v $(pwd)/pretrained_models:/app/pretrained_models:ro \
+  -v $(pwd)/outputs:/app/outputs:rw \
+  -e HF_TOKEN=your_token_here \
+  omniavatar:latest
+
+# With persistent model storage (recommended)
+docker run --gpus all \
+  -p 7860:7860 \
+  -v $(pwd)/pretrained_models:/app/pretrained_models:rw \
   -v $(pwd)/outputs:/app/outputs:rw \
   -e HF_TOKEN=your_token_here \
   omniavatar:latest
@@ -79,20 +65,11 @@ docker run --gpus all \
 # With public Gradio link
 docker run --gpus all \
   -p 7860:7860 \
-  -v $(pwd)/pretrained_models:/app/pretrained_models:ro \
+  -v $(pwd)/pretrained_models:/app/pretrained_models:rw \
   -v $(pwd)/outputs:/app/outputs:rw \
   -e HF_TOKEN=your_token_here \
   -e GRADIO_SHARE=true \
   omniavatar:latest
-
-# Using bash wrapper with --share flag
-docker run --gpus all \
-  -p 7860:7860 \
-  -v $(pwd)/pretrained_models:/app/pretrained_models:ro \
-  -v $(pwd)/outputs:/app/outputs:rw \
-  -e HF_TOKEN=your_token_here \
-  omniavatar:latest \
-  bash -c "python gradio_interface.py --share"
 ```
 
 ## Building the Image
@@ -124,7 +101,7 @@ export DOCKER_USERNAME=your_username
 
 ### Volume Mounts
 
-- `./pretrained_models:/app/pretrained_models:ro` - Model files (read-only)
+- `./pretrained_models:/app/pretrained_models:rw` - Model files (auto-downloaded and cached)
 - `./outputs:/app/outputs:rw` - Generated videos (read-write)
 - `./examples:/app/examples:ro` - Example files (optional)
 
@@ -187,7 +164,15 @@ OmniAvatar/
 ## For RunPod/Cloud Deployment
 
 1. Use the pre-built image from DockerHub
-2. Set environment variables in the platform UI
-3. Mount a persistent volume for models and outputs
+2. Set `HF_TOKEN` environment variable in the platform UI
+3. Mount a persistent volume for outputs (models auto-download)
 4. Ensure GPU support is enabled
 5. Open port 7860 for web access
+6. Set `GRADIO_SHARE=true` for public access if needed
+
+**RunPod Example:**
+- Template: Custom
+- Image: `your_username/omniavatar:latest`
+- Environment Variables: `HF_TOKEN=your_token_here`
+- Exposed Ports: `7860`
+- GPU: Enabled

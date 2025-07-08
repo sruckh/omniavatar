@@ -41,18 +41,15 @@ RUN pip install --no-cache-dir gradio
 # Copy application code
 COPY . .
 
-# Create directories for outputs (models will be mounted from host)
-RUN mkdir -p outputs
+# Create directories for outputs and models (models will be auto-downloaded)
+RUN mkdir -p outputs pretrained_models
 
-# Copy gradio interface
+# Copy application files
 COPY gradio_interface.py .
+COPY startup.sh .
 
 # Expose port for Gradio
 EXPOSE 7860
 
-# Default command
-CMD ["python", "gradio_interface.py"]
-
-# Alternative commands:
-# CMD ["python", "gradio_interface.py", "--share"]  # For public Gradio link
-# CMD ["bash", "-c", "python gradio_interface.py --share"]  # With bash wrapper
+# Default command - startup script handles model downloads and launches Gradio
+CMD ["./startup.sh"]
