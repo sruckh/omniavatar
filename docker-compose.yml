@@ -14,6 +14,8 @@ services:
       - ./examples:/app/examples:ro
       # Optional: Mount pretrained_models for persistence (models auto-download if not present)
       - ./pretrained_models:/app/pretrained_models:rw
+      # Optional: Mount cache directory for flash_attn wheel (faster startup)
+      - ./cache:/app/cache:ro
     environment:
       - HF_TOKEN=${HF_TOKEN}
       - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
