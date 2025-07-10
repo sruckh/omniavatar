@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # OmniAvatar Docker Build and Push Script
-# This script builds the Docker image and pushes it to DockerHub
+# This script builds the Docker image and pushes it to Docker Hub
 #
 # Usage:
 #   ./build_and_push.sh                    # Build and push with default settings
@@ -10,8 +10,8 @@
 #
 # Prerequisites:
 #   - Docker installed and running
-#   - DockerHub account
-#   - Logged in to DockerHub (docker login)
+#   - Docker Hub account
+#   - Logged in to Docker Hub (docker login)
 
 set -e
 
@@ -19,6 +19,7 @@ set -e
 DOCKER_USERNAME=${DOCKER_USERNAME:-"your_username"}
 IMAGE_NAME="omniavatar"
 VERSION=${VERSION:-"latest"}
+REGISTRY="docker.io"
 FULL_IMAGE_NAME="${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}"
 
 echo "🐳 Building OmniAvatar Docker image..."
@@ -30,7 +31,7 @@ echo ""
 # Validate username
 if [ "${DOCKER_USERNAME}" = "your_username" ]; then
     echo "⚠️  Warning: Using default username 'your_username'"
-    echo "   Set DOCKER_USERNAME environment variable to your DockerHub username"
+    echo "   Set DOCKER_USERNAME environment variable to your Docker Hub username"
     echo "   Example: DOCKER_USERNAME=myuser ./build_and_push.sh"
     echo ""
 fi
@@ -44,12 +45,12 @@ if [ "${VERSION}" != "latest" ]; then
     docker tag ${FULL_IMAGE_NAME} ${DOCKER_USERNAME}/${IMAGE_NAME}:latest
 fi
 
-# Login to DockerHub (if not already logged in)
-echo "Logging in to DockerHub..."
+# Login to Docker Hub (if not already logged in)
+echo "Logging in to Docker Hub..."
 docker login
 
 # Push the image
-echo "Pushing image to DockerHub..."
+echo "Pushing image to Docker Hub..."
 docker push ${FULL_IMAGE_NAME}
 
 if [ "${VERSION}" != "latest" ]; then
