@@ -3,8 +3,12 @@ pretrained_models/
 demo_out/
 outputs/
 
-# Large wheel files - use local copy for builds
+# Cache directory for downloaded wheels
+cache/
 *.whl
+
+# Environment variables
+.env
 
 # Python
 __pycache__/

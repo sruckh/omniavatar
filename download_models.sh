@@ -70,6 +70,28 @@ download_with_retry "OmniAvatar/OmniAvatar-1.3B" "./pretrained_models/OmniAvatar
 download_with_retry "facebook/wav2vec2-base-960h" "./pretrained_models/wav2vec2-base-960h" || exit 1
 
 echo "All models downloaded successfully!"
+
+# Optional: Download flash_attn wheel for faster container startup
+echo ""
+echo "🔍 Optional: Pre-downloading flash_attn wheel for faster container startup..."
+echo "(This is optional - flash_attn will be downloaded automatically in the container if needed)"
+read -p "Download flash_attn wheel now? (y/n): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "📥 Downloading flash_attn wheel..."
+    mkdir -p ./cache
+    wget -q --timeout=300 -O ./cache/flash_attn.whl "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl"
+    if [ $? -eq 0 ]; then
+        echo "✅ flash_attn wheel downloaded to ./cache/flash_attn.whl"
+        echo "    You can mount this in the container with: -v \$(pwd)/cache:/app/cache:ro"
+    else
+        echo "⚠️  Failed to download flash_attn wheel (will be downloaded at container startup)"
+    fi
+else
+    echo "Skipping flash_attn wheel download (will be downloaded at container startup)"
+fi
+
+echo ""
 echo "Final directory structure:"
 echo "OmniAvatar/"
 echo "├── pretrained_models/"
@@ -78,10 +100,19 @@ echo "│   ├── OmniAvatar-14B/"
 echo "│   ├── Wan2.1-T2V-1.3B/"
 echo "│   ├── OmniAvatar-1.3B/"
 echo "│   └── wav2vec2-base-960h/"
+if [ -f "./cache/flash_attn.whl" ]; then
+    echo "└── cache/"
+    echo "    └── flash_attn.whl"
+fi
 
 echo ""
 echo "Verifying structure:"
 ls -la ./pretrained_models/
+if [ -d "./cache" ]; then
+    echo ""
+    echo "Cache directory:"
+    ls -la ./cache/
+fi
 
 echo ""
 echo "Download complete. Models are ready for use."

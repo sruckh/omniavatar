@@ -16,6 +16,53 @@ fi
 
 echo "✅ HF_TOKEN is set"
 
+# Function to install flash_attn if not available
+install_flash_attn() {
+    echo "🔍 Checking for flash_attn..."
+    if python -c "import flash_attn" 2>/dev/null; then
+        echo "✅ flash_attn is already installed"
+        return 0
+    else
+        echo "📥 Installing flash_attn..."
+        local flash_attn_url="https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl"
+        local max_retries=3
+        local retry_count=0
+        
+        # Check if cached wheel exists first
+        if [ -f "/app/cache/flash_attn.whl" ]; then
+            echo "✅ Found cached flash_attn wheel, installing..."
+            if pip install --no-cache-dir /app/cache/flash_attn.whl; then
+                echo "✅ flash_attn installed successfully from cache"
+                return 0
+            else
+                echo "⚠️  Failed to install from cache, downloading..."
+            fi
+        fi
+        
+        # Download and install if not cached or cache failed
+        while [ $retry_count -lt $max_retries ]; do
+            echo "📥 Downloading flash_attn wheel (attempt $((retry_count + 1))/$max_retries)..."
+            
+            if wget -q --timeout=300 -O /tmp/flash_attn.whl "$flash_attn_url" && \
+               pip install --no-cache-dir /tmp/flash_attn.whl && \
+               rm -f /tmp/flash_attn.whl; then
+                echo "✅ flash_attn installed successfully"
+                return 0
+            else
+                retry_count=$((retry_count + 1))
+                if [ $retry_count -lt $max_retries ]; then
+                    echo "⚠️  flash_attn installation failed, retrying in 10s..."
+                    sleep 10
+                else
+                    echo "❌ Failed to install flash_attn after $max_retries attempts"
+                    echo "⚠️  Continuing without flash_attn (performance may be slower)"
+                    return 1
+                fi
+            fi
+        done
+    fi
+}
+
 # Function to check if models exist
 check_models() {
     local models_exist=true
@@ -102,6 +149,9 @@ if ! check_models; then
 else
     echo "✅ Using existing models"
 fi
+
+# Install flash_attn for performance optimization
+install_flash_attn
 
 # Verify final model structure
 echo "📋 Final model structure:"
