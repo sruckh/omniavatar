@@ -1,0 +1,11 @@
+pretrained_models/
+outputs/
+*.pyc
+__pycache__/
+.git/
+.gitignore
+*.md
+README.md
+DOCKER_README.md
+.env
+.env.example

@@ -45,6 +45,34 @@ check_models() {
     fi
 }
 
+# Function to download with retry logic
+download_with_retry() {
+    local model_name=$1
+    local local_dir=$2
+    local max_retries=5
+    local retry_count=0
+    local wait_time=10
+    
+    while [ $retry_count -lt $max_retries ]; do
+        echo "📥 Downloading $model_name (attempt $((retry_count + 1))/$max_retries)..."
+        
+        if timeout 3600 huggingface-cli download "$model_name" --local-dir "$local_dir" --resume-download; then
+            echo "✅ Successfully downloaded $model_name"
+            return 0
+        else
+            retry_count=$((retry_count + 1))
+            if [ $retry_count -lt $max_retries ]; then
+                echo "⚠️  Download failed, retrying in ${wait_time}s..."
+                sleep $wait_time
+                wait_time=$((wait_time * 2))  # Exponential backoff
+            else
+                echo "❌ Failed to download $model_name after $max_retries attempts"
+                return 1
+            fi
+        fi
+    done
+}
+
 # Download models if they don't exist
 if ! check_models; then
     echo "🔐 Logging in to Hugging Face..."
@@ -53,20 +81,12 @@ if ! check_models; then
     echo "📁 Creating models directory..."
     mkdir -p /app/pretrained_models
     
-    echo "📥 Downloading Wan2.1-T2V-14B base model..."
-    huggingface-cli download Wan-AI/Wan2.1-T2V-14B --local-dir /app/pretrained_models/Wan2.1-T2V-14B
-    
-    echo "📥 Downloading OmniAvatar-14B model..."
-    huggingface-cli download OmniAvatar/OmniAvatar-14B --local-dir /app/pretrained_models/OmniAvatar-14B
-    
-    echo "📥 Downloading Wan2.1-T2V-1.3B base model..."
-    huggingface-cli download Wan-AI/Wan2.1-T2V-1.3B --local-dir /app/pretrained_models/Wan2.1-T2V-1.3B
-    
-    echo "📥 Downloading OmniAvatar-1.3B model..."
-    huggingface-cli download OmniAvatar/OmniAvatar-1.3B --local-dir /app/pretrained_models/OmniAvatar-1.3B
-    
-    echo "📥 Downloading Wav2Vec2 audio encoder..."
-    huggingface-cli download facebook/wav2vec2-base-960h --local-dir /app/pretrained_models/wav2vec2-base-960h
+    # Download models with retry logic
+    download_with_retry "Wan-AI/Wan2.1-T2V-14B" "/app/pretrained_models/Wan2.1-T2V-14B" || exit 1
+    download_with_retry "OmniAvatar/OmniAvatar-14B" "/app/pretrained_models/OmniAvatar-14B" || exit 1
+    download_with_retry "Wan-AI/Wan2.1-T2V-1.3B" "/app/pretrained_models/Wan2.1-T2V-1.3B" || exit 1
+    download_with_retry "OmniAvatar/OmniAvatar-1.3B" "/app/pretrained_models/OmniAvatar-1.3B" || exit 1
+    download_with_retry "facebook/wav2vec2-base-960h" "/app/pretrained_models/wav2vec2-base-960h" || exit 1
     
     echo "✅ All models downloaded successfully!"
 else
