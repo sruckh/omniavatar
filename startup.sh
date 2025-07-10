@@ -49,14 +49,19 @@ check_models() {
 download_with_retry() {
     local model_name=$1
     local local_dir=$2
-    local max_retries=5
+    local max_retries=8
     local retry_count=0
-    local wait_time=10
+    local wait_time=5
     
     while [ $retry_count -lt $max_retries ]; do
         echo "📥 Downloading $model_name (attempt $((retry_count + 1))/$max_retries)..."
         
-        if timeout 3600 huggingface-cli download "$model_name" --local-dir "$local_dir" --resume-download; then
+        # Use longer timeout and additional HF CLI options for better reliability
+        if timeout 7200 huggingface-cli download "$model_name" \
+            --local-dir "$local_dir" \
+            --resume-download \
+            --local-dir-use-symlinks False \
+            --repo-type model; then
             echo "✅ Successfully downloaded $model_name"
             return 0
         else
@@ -64,7 +69,12 @@ download_with_retry() {
             if [ $retry_count -lt $max_retries ]; then
                 echo "⚠️  Download failed, retrying in ${wait_time}s..."
                 sleep $wait_time
-                wait_time=$((wait_time * 2))  # Exponential backoff
+                # More conservative backoff to avoid overwhelming the server
+                if [ $retry_count -ge 3 ]; then
+                    wait_time=$((wait_time + 30))  # Longer waits after multiple failures
+                else
+                    wait_time=$((wait_time * 2))   # Standard exponential backoff initially
+                fi
             else
                 echo "❌ Failed to download $model_name after $max_retries attempts"
                 return 1
