@@ -38,6 +38,7 @@ fi
 
 # Build the Docker image
 echo "Building Docker image..."
+echo "📝 Note: This build includes flash_attn wheel and performance optimizations"
 docker build -t ${FULL_IMAGE_NAME} .
 
 # Also tag as latest if not already
@@ -83,3 +84,19 @@ echo "     -v \$(pwd)/outputs:/app/outputs:rw \\"
 echo "     -e HF_TOKEN=your_token_here \\"
 echo "     -e GRADIO_SHARE=true \\"
 echo "     ${FULL_IMAGE_NAME}"
+echo ""
+echo "6. Multi-GPU for maximum performance (requires multiple GPUs):"
+echo "   docker run --gpus all -p 7860:7860 \\"
+echo "     -v \$(pwd)/pretrained_models:/app/pretrained_models:rw \\"
+echo "     -v \$(pwd)/outputs:/app/outputs:rw \\"
+echo "     -e HF_TOKEN=your_token_here \\"
+echo "     -e CUDA_VISIBLE_DEVICES=0,1,2,3 \\"
+echo "     --shm-size=2g \\"
+echo "     ${FULL_IMAGE_NAME}"
+echo ""
+echo "💡 Performance Tips:"
+echo "• Use the Advanced Settings in Gradio to enable TeaCache (0.14) for 3-4x speedup"
+echo "• Enable multi-GPU (sp_size=2-8) if you have multiple GPUs available"
+echo "• Try the 1.3B model for much faster inference"
+echo "• Use FSDP to reduce VRAM usage from 36GB to 14GB"
+echo "• Flash Attention is automatically enabled if available"
