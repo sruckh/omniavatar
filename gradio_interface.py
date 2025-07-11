@@ -60,6 +60,10 @@ def generate_avatar_video(prompt, image_file, audio_file, model_size="14B", guid
     if missing_models:
         return None, f"Missing models: {', '.join(missing_models)}\nPlease ensure models are properly mounted and downloaded."
     
+    # Validate overlap_frame (must be 1 + 4*n)
+    if overlap_frame % 4 != 1:
+        return None, f"Error: overlap_frame must be of form 1 + 4×n (like 1, 5, 9, 13, 17, 21, 25). Got: {overlap_frame}"
+    
     try:
         # Create temporary directory for processing
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -285,12 +289,10 @@ def create_interface():
                         step=10000,
                         label="Max Tokens (higher = longer videos but more VRAM)"
                     )
-                    overlap_frame = gr.Slider(
-                        minimum=1,
-                        maximum=25,
+                    overlap_frame = gr.Dropdown(
+                        choices=[1, 5, 9, 13, 17, 21, 25],
                         value=13,
-                        step=4,
-                        label="Overlap Frame (1 or 13, affects coherence)"
+                        label="Overlap Frame (must be 1 + 4×n, affects coherence)"
                     )
                     sp_size = gr.Slider(
                         minimum=1,
