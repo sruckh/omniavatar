@@ -152,6 +152,24 @@ def generate_avatar_video(prompt, image_file, audio_file, model_size="14B", guid
 
 def create_interface():
     """Create the Gradio interface"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        logger.info("Initializing Gradio interface components...")
+        
+        # Check system status
+        logger.info("Checking system status...")
+        missing_models = check_models()
+        if missing_models:
+            logger.warning(f"Missing models: {missing_models}")
+        
+        accel_status = check_acceleration_status()
+        logger.info(f"Acceleration status: {accel_status}")
+        
+    except Exception as e:
+        logger.error(f"Error during interface initialization: {e}", exc_info=True)
+        # Continue anyway to show the interface
     
     with gr.Blocks(title="OmniAvatar - Audio-Driven Avatar Generator") as demo:
         gr.HTML("""
@@ -298,18 +316,32 @@ def create_interface():
 
 if __name__ == "__main__":
     import argparse
+    import logging
     
-    parser = argparse.ArgumentParser(description="OmniAvatar Gradio Interface")
-    parser.add_argument("--share", action="store_true", help="Create a public Gradio link")
-    parser.add_argument("--port", type=int, default=7860, help="Port to run the interface on")
-    args = parser.parse_args()
+    # Set up logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
     
-    # Also check environment variable for share option
-    share = args.share or os.getenv("GRADIO_SHARE", "false").lower() == "true"
-    
-    demo = create_interface()
-    demo.launch(
-        server_name="0.0.0.0", 
-        server_port=args.port, 
-        share=share
-    )
+    try:
+        parser = argparse.ArgumentParser(description="OmniAvatar Gradio Interface")
+        parser.add_argument("--share", action="store_true", help="Create a public Gradio link")
+        parser.add_argument("--port", type=int, default=7860, help="Port to run the interface on")
+        args = parser.parse_args()
+        
+        # Also check environment variable for share option
+        share = args.share or os.getenv("GRADIO_SHARE", "false").lower() == "true"
+        
+        logger.info("Creating Gradio interface...")
+        demo = create_interface()
+        logger.info(f"Launching interface on port {args.port}, share={share}")
+        
+        demo.launch(
+            server_name="0.0.0.0", 
+            server_port=args.port, 
+            share=share,
+            show_error=True,
+            debug=True
+        )
+    except Exception as e:
+        logger.error(f"Failed to start Gradio interface: {e}", exc_info=True)
+        raise
