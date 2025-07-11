@@ -33,7 +33,23 @@ install_pytorch() {
             
             if pip install --no-cache-dir torch torchvision torchaudio --index-url "$pytorch_url"; then
                 echo "✅ PyTorch installed successfully"
-                python -c "import torch; print(f'PyTorch {torch.__version__} (CUDA available: {torch.cuda.is_available()})')"
+                python -c "
+import torch
+print(f'PyTorch {torch.__version__}')
+print(f'CUDA available: {torch.cuda.is_available()}')
+if torch.cuda.is_available():
+    print(f'CUDA version: {torch.version.cuda}')
+    print(f'GPU count: {torch.cuda.device_count()}')
+    print(f'GPU name: {torch.cuda.get_device_name(0)}')
+    print(f'GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f}GB')
+    # Test GPU tensor operations
+    x = torch.randn(100, 100).cuda()
+    y = torch.randn(100, 100).cuda()
+    z = torch.matmul(x, y)
+    print(f'GPU tensor test: {z.shape} on {z.device}')
+else:
+    print('⚠️  No GPU detected')
+"
                 return 0
             else
                 retry_count=$((retry_count + 1))
@@ -224,6 +240,44 @@ install_flash_attn
 # Verify final model structure
 echo "📋 Final model structure:"
 ls -la /app/pretrained_models/
+
+# Set GPU environment variables for proper inference
+echo "🔧 Setting GPU environment variables..."
+export RANK=0
+export LOCAL_RANK=0
+export WORLD_SIZE=1
+export NNODES=1
+export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
+
+# Final GPU verification
+echo "🔍 Final GPU verification:"
+python -c "
+import torch
+import os
+print(f'PyTorch version: {torch.__version__}')
+print(f'CUDA available: {torch.cuda.is_available()}')
+print(f'Environment variables:')
+print(f'  CUDA_VISIBLE_DEVICES: {os.environ.get(\"CUDA_VISIBLE_DEVICES\", \"Not set\")}')
+print(f'  RANK: {os.environ.get(\"RANK\", \"Not set\")}')
+print(f'  LOCAL_RANK: {os.environ.get(\"LOCAL_RANK\", \"Not set\")}')
+print(f'  WORLD_SIZE: {os.environ.get(\"WORLD_SIZE\", \"Not set\")}')
+if torch.cuda.is_available():
+    print(f'CUDA version: {torch.version.cuda}')
+    print(f'GPU count: {torch.cuda.device_count()}')
+    for i in range(torch.cuda.device_count()):
+        print(f'GPU {i}: {torch.cuda.get_device_name(i)}')
+    print(f'Current GPU: {torch.cuda.current_device()}')
+    print(f'GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f}GB')
+    # Test actual GPU operations
+    try:
+        x = torch.randn(1000, 1000).cuda()
+        y = torch.mm(x, x.t())
+        print(f'✅ GPU operations working: {y.shape} on {y.device}')
+    except Exception as e:
+        print(f'❌ GPU operations failed: {e}')
+else:
+    print('❌ No GPU detected - inference will be CPU-only')
+"
 
 echo "🚀 Starting Gradio interface..."
 
