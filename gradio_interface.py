@@ -123,7 +123,10 @@ def generate_avatar_video(prompt, image_file, audio_file, model_size="14B", guid
                     "LOCAL_RANK": "0", 
                     "WORLD_SIZE": "1",
                     "NNODES": "1",
-                    "CUDA_VISIBLE_DEVICES": env.get("CUDA_VISIBLE_DEVICES", "0")
+                    "CUDA_VISIBLE_DEVICES": env.get("CUDA_VISIBLE_DEVICES", "0"),
+                    "MASTER_ADDR": "127.0.0.1",
+                    "MASTER_PORT": "12345",
+                    "NCCL_DEBUG": "WARN"  # Reduce NCCL verbosity
                 })
             else:
                 # For multi-GPU inference, use torchrun
@@ -138,7 +141,7 @@ def generate_avatar_video(prompt, image_file, audio_file, model_size="14B", guid
             
             print(f"Running inference command: {' '.join(cmd)}")
             if sp_size == 1:
-                print(f"Environment: RANK={env['RANK']}, LOCAL_RANK={env['LOCAL_RANK']}, WORLD_SIZE={env['WORLD_SIZE']}, CUDA_VISIBLE_DEVICES={env['CUDA_VISIBLE_DEVICES']}")
+                print(f"Environment: RANK={env['RANK']}, LOCAL_RANK={env['LOCAL_RANK']}, WORLD_SIZE={env['WORLD_SIZE']}, CUDA_VISIBLE_DEVICES={env['CUDA_VISIBLE_DEVICES']}, MASTER_ADDR={env['MASTER_ADDR']}, MASTER_PORT={env['MASTER_PORT']}")
             result = subprocess.run(cmd, capture_output=True, text=True, cwd="/app", env=env)
             print(f"Inference stdout: {result.stdout}")
             if result.stderr:
