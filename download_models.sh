@@ -33,8 +33,6 @@ download_with_retry() {
         # Use longer timeout and additional HF CLI options for better reliability
         if timeout 7200 huggingface-cli download "$model_name" \
             --local-dir "$local_dir" \
-            --resume-download \
-            --local-dir-use-symlinks False \
             --repo-type model; then
             echo "✅ Successfully downloaded $model_name"
             return 0
@@ -51,6 +49,7 @@ download_with_retry() {
                 fi
             else
                 echo "❌ Failed to download $model_name after $max_retries attempts"
+                echo "💡 This may be a temporary HuggingFace Hub server issue. Try again later."
                 return 1
             fi
         fi
@@ -80,9 +79,9 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "📥 Downloading flash_attn wheel..."
     mkdir -p ./cache
-    wget -q --timeout=300 -O ./cache/flash_attn.whl "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl"
+    wget -q --timeout=300 -O ./cache/flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl "https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.1/flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl"
     if [ $? -eq 0 ]; then
-        echo "✅ flash_attn wheel downloaded to ./cache/flash_attn.whl"
+        echo "✅ flash_attn wheel downloaded to ./cache/flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl"
         echo "    You can mount this in the container with: -v \$(pwd)/cache:/app/cache:ro"
     else
         echo "⚠️  Failed to download flash_attn wheel (will be downloaded at container startup)"
@@ -100,9 +99,9 @@ echo "│   ├── OmniAvatar-14B/"
 echo "│   ├── Wan2.1-T2V-1.3B/"
 echo "│   ├── OmniAvatar-1.3B/"
 echo "│   └── wav2vec2-base-960h/"
-if [ -f "./cache/flash_attn.whl" ]; then
+if [ -f "./cache/flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl" ]; then
     echo "└── cache/"
-    echo "    └── flash_attn.whl"
+    echo "    └── flash_attn-2.8.1+cu12torch2.7cxx11abiFALSE-cp312-cp312-linux_x86_64.whl"
 fi
 
 echo ""

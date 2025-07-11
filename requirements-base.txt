@@ -1,0 +1,9 @@
+# Base requirements without PyTorch dependencies
+# PyTorch, peft, transformers, and xfuser will be installed at runtime
+
+librosa==0.10.2.post1
+tqdm
+scipy==1.14.0
+numpy==1.26.4 
+ftfy
+einops
