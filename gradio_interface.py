@@ -108,16 +108,38 @@ def generate_avatar_video(prompt, image_file, audio_file, model_size="14B", guid
                 hp_params.append("use_gradient_checkpointing=True")
             
             # Run inference
-            cmd = [
-                "torchrun", "--standalone", f"--nproc_per_node={sp_size}", 
-                "/app/scripts/inference.py",
-                "--config", config_file,
-                "--input_file", input_file,
-                "--hp", ",".join(hp_params)
-            ]
+            if sp_size == 1:
+                # For single-GPU inference, use python directly with proper environment
+                cmd = [
+                    "python", "/app/scripts/inference.py",
+                    "--config", config_file,
+                    "--input_file", input_file,
+                    "--hp", ",".join(hp_params)
+                ]
+                # Set environment variables for single-GPU inference
+                env = os.environ.copy()
+                env.update({
+                    "RANK": "0",
+                    "LOCAL_RANK": "0", 
+                    "WORLD_SIZE": "1",
+                    "NNODES": "1",
+                    "CUDA_VISIBLE_DEVICES": env.get("CUDA_VISIBLE_DEVICES", "0")
+                })
+            else:
+                # For multi-GPU inference, use torchrun
+                cmd = [
+                    "torchrun", "--standalone", f"--nproc_per_node={sp_size}", 
+                    "/app/scripts/inference.py",
+                    "--config", config_file,
+                    "--input_file", input_file,
+                    "--hp", ",".join(hp_params)
+                ]
+                env = os.environ.copy()
             
             print(f"Running inference command: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True, cwd="/app")
+            if sp_size == 1:
+                print(f"Environment: RANK={env['RANK']}, LOCAL_RANK={env['LOCAL_RANK']}, WORLD_SIZE={env['WORLD_SIZE']}, CUDA_VISIBLE_DEVICES={env['CUDA_VISIBLE_DEVICES']}")
+            result = subprocess.run(cmd, capture_output=True, text=True, cwd="/app", env=env)
             print(f"Inference stdout: {result.stdout}")
             if result.stderr:
                 print(f"Inference stderr: {result.stderr}")
