@@ -312,8 +312,59 @@ def create_interface():
                 gr.HTML("<h3>🎥 Output</h3>")
                 output_video = gr.Video(label="Generated Video")
                 status_text = gr.Textbox(label="Status", lines=5)
+                
+                gr.HTML("<h3>📋 Prompt Structure Guide</h3>")
+                gr.HTML("""
+                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #007bff;">
+                    <strong>✍️ Recommended Prompt Format:</strong><br>
+                    <code>[Description of first frame] - [Description of human behavior] - [Description of background (optional)]</code>
+                    <br><br>
+                    <strong>📝 Guidelines:</strong>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>First frame:</strong> Describe the person's appearance, pose, clothing</li>
+                        <li><strong>Behavior:</strong> Describe how they speak, gesture, move</li>
+                        <li><strong>Background:</strong> Optional scene description for context</li>
+                        <li><strong>Style:</strong> Use clear, descriptive language</li>
+                        <li><strong>Focus:</strong> Emphasize visible hands and facial expressions</li>
+                    </ul>
+                </div>
+                """)
+                
+                gr.HTML("<h3>💡 Example Prompts</h3>")
+                
+                # Create example prompts following the guidelines
+                example_prompts = [
+                    "A professional woman in business attire sitting at a desk - speaking confidently with expressive hand gestures - modern office background",
+                    "A young man with casual clothing standing upright - talking enthusiastically with animated hand movements - clean studio background", 
+                    "An elderly gentleman in a sweater seated comfortably - speaking warmly with gentle hand gestures - cozy living room setting",
+                    "A teacher in front of a whiteboard - explaining concepts with clear pointing gestures - classroom environment",
+                    "A chef in white uniform holding utensils - describing cooking techniques with demonstrative hand motions - kitchen background",
+                    "A fitness instructor in athletic wear - motivating with energetic gestures and expressions - gym setting",
+                    "A news anchor in formal attire at a desk - delivering news with professional hand movements - news studio background",
+                    "A doctor in medical coat with stethoscope - explaining medical information with reassuring gestures - clinical office setting",
+                    "A musician holding an instrument - discussing music with passionate hand expressions - recording studio background",
+                    "A presenter in smart casual attire - engaging audience with dynamic gestures and facial expressions - conference room setting"
+                ]
+                
+                example_dropdown = gr.Dropdown(
+                    choices=example_prompts,
+                    label="Select an Example Prompt",
+                    value=None,
+                    interactive=True
+                )
         
         # Event handlers
+        def update_prompt(selected_example):
+            if selected_example:
+                return selected_example
+            return gr.update()
+        
+        example_dropdown.change(
+            fn=update_prompt,
+            inputs=[example_dropdown],
+            outputs=[prompt]
+        )
+        
         generate_btn.click(
             fn=generate_avatar_video,
             inputs=[prompt, image_file, audio_file, model_size, guidance_scale, audio_scale, num_steps, tea_cache_thresh, use_fsdp, max_tokens, overlap_frame, sp_size, use_gradient_checkpointing],
